@@ -1,0 +1,19 @@
+#!/bin/sh
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+ORANGE='\033[0;33m'
+NC='\033[0m'
+
+function () {
+  if [ $? -ne 0 ]; then
+    echo "${RED} Failed to run last command... ${NC}"
+    exit 1
+  fi
+}
+yarn build
+docker-compose --env-file ./.env.dev $@
+
+check_for_error()
+
+echo "${GREEN}Done !"

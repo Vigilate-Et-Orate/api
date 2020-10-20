@@ -1,0 +1,73 @@
+version: '3'
+services:
+  api:
+    container_name: api_dev
+    image: node:latest
+    ports:
+      - '8080:8080'
+    environment:
+      PORT: ${PORT}
+      DB_URL: '${DB_URL}'
+    depends_on:
+      - db
+    working_dir: /app
+    volumes:
+      - './built:/app'
+      - './node_modules:/app/node_modules'
+      - './package.json:/app/package.json'
+    command: 'node src/index.js'
+  db:
+    container_name: db
+    image: mongo:latest
+    volumes:
+      - ./data/db/main:/data/db
+    environment:
+      MONGO_DATA_DIR: ${MONGO_DATA_DIR}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+    ports:
+      - '27017:27017'
+  dbadmin:
+    container_name: db_admin
+    image: mongo-express:latest
+    ports:
+      - '8081:8081'
+    environment:
+      ME_CONFIG_BASICAUTH_USERNAME: ${ME_CONFIG_BASICAUTH_USERNAME}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${ME_CONFIG_BASICAUTH_PASSWORD}
+      ME_CONFIG_MONGODB_SERVER: ${ME_CONFIG_MONGODB_SERVER}
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:latest
+    volumes:
+      - config_prometheus:/prometheus
+      - ./config/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - '8082:9090'
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/config.ini:/etc/grafana/config.ini
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GF_SECURITY_ADMIN_PASSWORD}
+    depends_on:
+      - prometheus
+    ports:
+      - '8083:3000'
+  swagger:
+    container_name: swaggerdoc
+    image: swaggerapi/swagger-ui
+    ports:
+      - '8084:8080'
+    environment:
+      SWAGGER_JSON: ${SWAGGER_JSON}
+    volumes:
+      - './swagger.json:/app/swagger.json'
+volumes:
+  config_prometheus: {}
+  grafana_data: {}

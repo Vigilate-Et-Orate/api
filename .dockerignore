@@ -1,0 +1,8 @@
+node_modules
+tests
+.eslint*
+.prettier*
+jest.config.js
+built
+coverage
+data

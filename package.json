@@ -1,0 +1,64 @@
+{
+  "name": "rest_express_ts_api",
+  "version": "1.0.0",
+  "description": "RESTful API with NodeJS ExpressJS in TypeScript",
+  "main": "index.js",
+  "repository": "git@github.com:awalshy/rest_express_ts_api.git",
+  "author": "Arthur Walsh <walsh.arthur@outlook.com>",
+  "license": "MIT",
+  "scripts": {
+    "prebuild": "rm -rf built/*",
+    "build": "tsc",
+    "start": "node .",
+    "test": "export NODE_ENV=test && jest",
+    "type-check": "tsc --noEmit --pretty",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "lint": "eslint . --ext ts"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "yarn run type-check"
+    }
+  },
+  "lint-staged": {
+    "*.ts": [
+      "yarn lint",
+      "yarn format"
+    ]
+  },
+  "dependencies": {
+    "bcrypt": "^5.0.0",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "helmet": "^4.1.1",
+    "jsonwebtoken": "^8.5.1",
+    "migrate-mongo": "^8.1.2",
+    "mongoose": "^5.10.9",
+    "morgan": "^1.10.0",
+    "prom-client": "^12.0.0"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^3.0.0",
+    "@types/body-parser": "^1.19.0",
+    "@types/cors": "^2.8.8",
+    "@types/express": "^4.17.8",
+    "@types/jsonwebtoken": "^8.5.0",
+    "@types/mongoose": "^5.7.36",
+    "@types/morgan": "^1.9.1",
+    "@types/node": "^14.11.10",
+    "@types/supertest": "^2.0.10",
+    "@typescript-eslint/eslint-plugin": "^4.4.1",
+    "@typescript-eslint/parser": "^4.4.1",
+    "eslint": "^7.11.0",
+    "eslint-config-prettier": "^6.13.0",
+    "husky": "^4.3.0",
+    "jest": "^26.5.3",
+    "lint-staged": "^10.4.2",
+    "mongodb-memory-server": "^6.9.2",
+    "supertest": "^5.0.0",
+    "ts-jest": "^26.4.1",
+    "typescript": "^4.0.3"
+  }
+}
