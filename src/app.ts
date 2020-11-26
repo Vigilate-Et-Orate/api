@@ -10,6 +10,9 @@ import packageDetails from '../package.json'
 // Routes
 import AuthRoutes from './Auth/AuthRoutes'
 import UsersRoutes from './User/UserRoutes'
+import DevicesRoutes from './Devices/DevicesRoutes'
+import PrayerRoutes from './Prayer/PrayerRoutes'
+import FavouriteRoutes from './Favourite/FavouriteRoutes'
 import mongoose from 'mongoose'
 
 Prometheus.collectDefaultMetrics()
@@ -34,6 +37,9 @@ class App {
   private loadRoutes(): void {
     this.app.use('/', AuthRoutes)
     this.app.use('/me', UsersRoutes)
+    this.app.use('/devices', DevicesRoutes)
+    this.app.use('/prayers', PrayerRoutes)
+    this.app.use('/favourites', FavouriteRoutes)
   }
 
   private config(): void {
