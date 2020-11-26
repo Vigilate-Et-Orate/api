@@ -1,5 +1,12 @@
 import BaseError from './BaseError'
 
+export class BadParameterError extends BaseError {
+  constructor(paramName?: string) {
+    super('Bad Parameter ' + paramName, 400)
+    Object.setPrototypeOf(this, BaseError.prototype)
+  }
+}
+
 export class MissingParamError extends BaseError {
   constructor() {
     super('Missing Parameters', 400)

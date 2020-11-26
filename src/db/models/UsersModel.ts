@@ -1,4 +1,5 @@
 import mongoose, { Document } from 'mongoose'
+import { IDeviceDoc } from './DevicesModel'
 
 interface IUser {
   firstname: string
@@ -6,6 +7,7 @@ interface IUser {
   email: string
   password?: string
   admin: boolean
+  devices: IDeviceDoc[] | string[]
   googleId?: string
   googleAccessToken?: string
 }
@@ -18,10 +20,13 @@ const userSchema = new mongoose.Schema({
   email: { type: String, unique: true, required: true },
   password: { type: String, required: false },
   admin: { type: Boolean, required: true },
+  devices: [
+    { type: mongoose.Schema.Types.ObjectId, ref: 'devices', required: true },
+  ],
   googleId: { type: String, required: false },
   googleAccessToken: { type: String, required: false },
 })
 
-const UsersModel = mongoose.model<IUserDoc>('users', userSchema)
+const UsersModel = mongoose.model<IUserDoc>('users', userSchema, 'users')
 
 export default UsersModel

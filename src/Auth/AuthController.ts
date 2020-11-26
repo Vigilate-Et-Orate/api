@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import Prometheus from 'prom-client'
+
 import UsersModel, { IUserDoc } from '../db/models/UsersModel'
 import {
   MissingParamError,
@@ -35,6 +36,7 @@ class AuthController {
         lastname,
         admin: admin || false,
         password: bcrypt.hashSync(password, 12),
+        devices: [],
       })
 
       const token = jwt.sign(
@@ -107,6 +109,7 @@ class AuthController {
           lastname,
           firstname,
           admin: false,
+          devices: [],
           googleId,
           googleAccessToken: accessToken,
         })
