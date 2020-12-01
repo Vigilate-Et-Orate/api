@@ -51,6 +51,7 @@ class AuthController {
           email: user.email,
           lastname: user.lastname,
           firstname: user.firstname,
+          admin: user.admin,
         },
       })
     } catch (e) {
@@ -82,6 +83,7 @@ class AuthController {
             firstname: user.firstname,
             lastname: user.lastname,
             email: user.email,
+            admin: user.admin,
           },
         })
       } else {
