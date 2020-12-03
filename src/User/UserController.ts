@@ -26,11 +26,11 @@ class UserController {
   async update(req: Request, res: Response): Promise<void> {
     try {
       updateUserCount.inc()
-      const { userId } = req.params
+      const { userId, id } = req.params
       const { email, firstname, lastname } = req.body
 
-      if (!userId) throw new UnauthorizedAccessError()
-      const user = await UsersModel.findById(userId)
+      if (!id && !userId) throw new MissingParamError()
+      const user = await UsersModel.findById(id || userId)
       if (!user) throw new DbNotFoundError('User')
 
       const updates = {
@@ -52,10 +52,10 @@ class UserController {
   async retrieve(req: Request, res: Response): Promise<void> {
     try {
       getUserCount.inc()
-      const { userId } = req.params
+      const { userId, id } = req.params
 
-      if (!userId) throw new UnauthorizedAccessError()
-      const user = await UsersModel.findOne({ _id: userId })
+      if (!userId && !id) throw new MissingParamError()
+      const user = await UsersModel.findOne({ _id: id || userId })
       if (!user) throw new DbNotFoundError('User')
 
       res.json({
@@ -64,6 +64,7 @@ class UserController {
           firstname: user.firstname,
           lastname: user.lastname,
           email: user.email,
+          admin: user.admin,
         },
       })
     } catch (e) {
@@ -71,15 +72,35 @@ class UserController {
     }
   }
 
+  async all(req: Request, res: Response): Promise<void> {
+    try {
+      const { userId } = req.params
+
+      if (!userId) throw new UnauthorizedAccessError()
+      const users = await UsersModel.find()
+      users.map((u) => ({
+        _id: u._id,
+        firstname: u.firstname,
+        lastname: u.lastname,
+        email: u.email,
+        admin: u.admin,
+        devices: u.devices,
+      }))
+      res.json({ users })
+    } catch (e) {
+      res.status(500).json({ error: e.message })
+    }
+  }
+
   async updatePwd(req: Request, res: Response): Promise<void> {
     try {
       updatePwdCount.inc()
       const { password, oldPassword } = req.body
-      const { userId } = req.params
+      const { userId, id } = req.params
 
-      if (!userId) throw new UnauthorizedAccessError()
+      if (!userId && !id) throw new UnauthorizedAccessError()
       if (!password || !oldPassword) throw new MissingParamError()
-      const user = await UsersModel.findById(userId)
+      const user = await UsersModel.findById(id || userId)
       if (!user) throw new DbNotFoundError('User')
       if (!user.password) throw new WrongPwdError()
       if (!bcrypt.compareSync(oldPassword, user.password))
@@ -98,10 +119,10 @@ class UserController {
 
   async delete(req: Request, res: Response): Promise<void> {
     try {
-      const { userId } = req.params
+      const { userId, id } = req.params
 
-      if (!userId) throw new UnauthorizedAccessError()
-      const user = await UsersModel.findByIdAndDelete(userId)
+      if (!userId && !id) throw new MissingParamError()
+      const user = await UsersModel.findByIdAndDelete(id || userId)
       if (!user) throw new DbNotFoundError('User')
 
       res.json(user)
