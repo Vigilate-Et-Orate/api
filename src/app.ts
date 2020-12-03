@@ -9,7 +9,7 @@ import { connect } from './db/db'
 import packageDetails from '../package.json'
 // Routes
 import AuthRoutes from './Auth/AuthRoutes'
-import UsersRoutes from './User/UserRoutes'
+import UsersRoutes, { meRouter } from './User/UserRoutes'
 import DevicesRoutes from './Devices/DevicesRoutes'
 import PrayerRoutes from './Prayer/PrayerRoutes'
 import FavouriteRoutes from './Favourite/FavouriteRoutes'
@@ -36,7 +36,8 @@ class App {
 
   private loadRoutes(): void {
     this.app.use('/', AuthRoutes)
-    this.app.use('/me', UsersRoutes)
+    this.app.use('/me', meRouter)
+    this.app.use('/users', UsersRoutes)
     this.app.use('/devices', DevicesRoutes)
     this.app.use('/prayers', PrayerRoutes)
     this.app.use('/favourites', FavouriteRoutes)
@@ -51,11 +52,7 @@ class App {
       })
     )
     this.app.use(helmet())
-    this.app.use(
-      cors({
-        origin: 'http://localhost:3000',
-      })
-    )
+    this.app.use(cors())
     this.app.get('/metrics', (_req, res) => {
       res.set('Content-Type', Prometheus.register.contentType)
       res.end(Prometheus.register.metrics())

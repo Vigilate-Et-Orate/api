@@ -41,7 +41,7 @@ class PrayerController {
       })
 
       res.json({
-        id: prayer._id,
+        _id: prayer._id,
         name: prayer.name,
         displayName: prayer.displayName,
         content: prayer.content,
@@ -63,7 +63,7 @@ class PrayerController {
       if ((!prayerContent && !notifContent) || !userId)
         throw new MissingParamError()
 
-      const prayer = await PrayerModel.findById(prayerContent.id)
+      const prayer = await PrayerModel.findById(prayerContent._id)
       if (!prayer) throw new DbNotFoundError()
 
       prayer.name = getUpdate(prayerContent.name, prayer.name)
@@ -102,7 +102,7 @@ class PrayerController {
       }
 
       res.json({
-        id: prayer._id,
+        _id: prayer._id,
         name: prayer.name,
         displayName: prayer.displayName,
         content: prayer.content,
@@ -131,7 +131,7 @@ class PrayerController {
       const prayer = await PrayerModel.findById(id)
       if (!prayer) throw new DbNotFoundError()
       res.json({
-        id: prayer._id,
+        _id: prayer._id,
         name: prayer.name,
         displayName: prayer.displayName,
         content: prayer.content,

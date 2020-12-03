@@ -21,10 +21,14 @@ const isAdmin = async (
       ? jwt.decode(authorization)
       : jwt.decode(token as string)
     if (!decoded) throw new InvalidTokenError()
-    const userId = typeof decoded === 'string' ? decoded : decoded.id
-    const user = await UsersModel.findById(userId)
-    if (!user || !user.admin) throw new UnauthorizedAdminError()
-    req.params.userId = userId
+    if (typeof decoded !== 'string') {
+      req.params.userId = decoded._id
+      if (!decoded.admin) throw new UnauthorizedAdminError()
+    } else {
+      const user = await UsersModel.findById(decoded)
+      if (!user || !user.admin) throw new UnauthorizedAdminError()
+      req.params.userId = decoded
+    }
   } catch (e) {
     res.status(e.getStatusCode()).json({ error: e.message })
     return
