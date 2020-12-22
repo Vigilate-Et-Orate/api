@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import Prometheus from 'prom-client'
+import * as fireadmin from 'firebase-admin'
 
 import UsersModel, { IUserDoc } from '../db/models/UsersModel'
 import {
@@ -10,6 +11,7 @@ import {
   WrongPwdError,
 } from '../Error/BadRequestError'
 import BaseError from '../Error/BaseError'
+import serviceAdmin from '../../config/vigilate-et-orate-firebase-admin.json'
 
 const registerCount = new Prometheus.Counter({
   name: 'register',
@@ -21,6 +23,14 @@ const loginCount = new Prometheus.Counter({
   help: 'Number of logins',
 })
 
+const fire = fireadmin.initializeApp({
+  credential: fireadmin.credential.cert(
+    serviceAdmin as fireadmin.ServiceAccount
+  ),
+  databaseURL: 'https://vigilate-et-orate.firebaseio.com',
+})
+const fauth = fire.auth()
+
 class AuthController {
   async register(req: Request, res: Response): Promise<void> {
     try {
@@ -29,7 +39,11 @@ class AuthController {
 
       if (!email || !firstname || !lastname || !password)
         throw new MissingParamError()
-
+      await fauth.createUser({
+        email,
+        displayName: firstname + ' ' + lastname,
+        password,
+      })
       const user = await UsersModel.create({
         email,
         firstname,
@@ -57,7 +71,7 @@ class AuthController {
     } catch (e) {
       if (e instanceof BaseError)
         res.status(e.getStatusCode()).json({ error: e.message })
-      else res.status(500).json({ error: 'An Error Occurred' })
+      else res.status(500).json({ error: 'An Error Occurred' + e.message })
     }
   }
 

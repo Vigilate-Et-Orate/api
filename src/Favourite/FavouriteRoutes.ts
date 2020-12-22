@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import isAuth from '../middleware/isAdmin'
+import isAuth from '../middleware/isAuth'
 
 import FavouriteController from './FavouriteController'
 

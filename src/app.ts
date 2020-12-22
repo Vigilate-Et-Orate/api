@@ -3,6 +3,7 @@ import * as bodyParser from 'body-parser'
 import morgan from 'morgan'
 import helmet from 'helmet'
 import cors from 'cors'
+import schedule from 'node-schedule'
 import Prometheus from 'prom-client'
 
 import { connect } from './db/db'
@@ -13,7 +14,9 @@ import UsersRoutes, { meRouter } from './User/UserRoutes'
 import DevicesRoutes from './Devices/DevicesRoutes'
 import PrayerRoutes from './Prayer/PrayerRoutes'
 import FavouriteRoutes from './Favourite/FavouriteRoutes'
+import NotifsRoutes from './Notifs/NotifRoutes'
 import mongoose from 'mongoose'
+import { notifTask } from './utils/notificationTask'
 
 Prometheus.collectDefaultMetrics()
 
@@ -41,6 +44,7 @@ class App {
     this.app.use('/devices', DevicesRoutes)
     this.app.use('/prayers', PrayerRoutes)
     this.app.use('/favourites', FavouriteRoutes)
+    this.app.use('/notifications', NotifsRoutes)
   }
 
   private config(): void {
@@ -66,6 +70,8 @@ class App {
       }
       res.json(infos)
     })
+    // Notification Task
+    schedule.scheduleJob('Notification', '*/1 * * * *', notifTask)
   }
 }
 

@@ -10,7 +10,7 @@ interface IDevice {
 export interface IDeviceDoc extends Document, IDevice {}
 
 const deviceSchema = new mongoose.Schema({
-  token: { type: String, required: true },
+  token: { type: String, required: true, unique: true },
   name: { type: String, required: false },
   user: { type: mongoose.Schema.Types.ObjectId, refs: 'users', required: true },
 })

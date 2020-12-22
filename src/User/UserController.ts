@@ -57,6 +57,7 @@ class UserController {
       if (!userId && !id) throw new MissingParamError()
       const user = await UsersModel.findOne({ _id: id || userId })
       if (!user) throw new DbNotFoundError('User')
+      await user.populate('devices').execPopulate()
 
       res.json({
         user: {
@@ -65,6 +66,7 @@ class UserController {
           lastname: user.lastname,
           email: user.email,
           admin: user.admin,
+          devices: user.devices,
         },
       })
     } catch (e) {

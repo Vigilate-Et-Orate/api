@@ -1,23 +1,28 @@
 import mongoose, { Document } from 'mongoose'
 import { INotificationContentDoc } from './NotificationContentModel'
-import { IDeviceDoc } from './DevicesModel'
+import { IUserDoc } from './UsersModel'
 
 interface INotification {
-  device: IDeviceDoc | string
+  user: string | IUserDoc
   notificationContent: INotificationContentDoc | string
+  time: string
 }
 
 export interface INotificationDoc extends Document, INotification {}
 
 const notificationSchema = new mongoose.Schema({
-  device: {
+  user: {
     type: mongoose.Schema.Types.ObjectId,
-    refs: 'devices',
+    refs: 'users',
     required: true,
   },
   notificationContent: {
     type: mongoose.Schema.Types.ObjectId,
     refs: 'notificationContents',
+    required: true,
+  },
+  time: {
+    type: String,
     required: true,
   },
 })
