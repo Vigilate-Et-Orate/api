@@ -2,6 +2,7 @@
 built
 grafana/**
 prometheus/*
+data
 
 # Logs
 logs

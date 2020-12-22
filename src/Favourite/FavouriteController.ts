@@ -82,7 +82,15 @@ class FavouriteController {
       const { userId } = req.params
 
       const favs = await FavouriteModel.find({ user: userId })
-      res.json(favs)
+      const formated = favs.map((f) => {
+        return {
+          id: f._id,
+          user: f.user,
+          prayer: f.prayer,
+          faved: f.faved,
+        }
+      })
+      res.json(formated)
     } catch (e) {
       res.status(404).json({ message: 'Failed to get favs for this user' })
     }
