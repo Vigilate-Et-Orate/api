@@ -39,6 +39,7 @@ class AuthController {
 
       if (!email || !firstname || !lastname || !password)
         throw new MissingParamError()
+
       await fauth.createUser({
         email,
         displayName: firstname + ' ' + lastname,

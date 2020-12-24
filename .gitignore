@@ -3,6 +3,7 @@ built
 grafana/**
 prometheus/*
 data
+config/vigilate-et-orate-firebase-admin.json
 
 # Logs
 logs
