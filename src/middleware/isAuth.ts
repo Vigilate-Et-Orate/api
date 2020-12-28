@@ -19,7 +19,12 @@ const isAuth = (req: Request, res: Response, next: () => void): void => {
     res.status(500)
     return next()
   }
-  req.params.userId = typeof decoded === 'string' ? decoded : decoded.id
+  req.params.userId =
+    typeof decoded === 'string'
+      ? decoded
+      : decoded.id
+      ? decoded.id
+      : decoded._id
   next()
 }
 
