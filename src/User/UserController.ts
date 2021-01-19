@@ -97,19 +97,19 @@ class UserController {
   async updatePwd(req: Request, res: Response): Promise<void> {
     try {
       updatePwdCount.inc()
-      const { password, oldPassword } = req.body
+      const { password } = req.body
       const { userId, id } = req.params
 
       if (!userId && !id) throw new UnauthorizedAccessError()
-      if (!password || !oldPassword) throw new MissingParamError()
+      if (!password) throw new MissingParamError()
       const user = await UsersModel.findById(id || userId)
       if (!user) throw new DbNotFoundError('User')
       if (!user.password) throw new WrongPwdError()
-      if (!bcrypt.compareSync(oldPassword, user.password))
-        throw new WrongPwdError()
       const newPwd = {
         password:
-          password && user?.password !== password ? password : user?.password,
+          password && user?.password !== password
+            ? bcrypt.hashSync(password, 12)
+            : user?.password,
       }
       await UsersModel.findByIdAndUpdate(userId, newPwd)
 
@@ -118,6 +118,31 @@ class UserController {
       res.status(e.getStatusCode()).json({ error: e.message })
     }
   }
+
+  // async updatePwd(req: Request, res: Response): Promise<void> {
+  //   try {
+  //     updatePwdCount.inc()
+  //     const { password, oldPassword } = req.body
+  //     const { userId, id } = req.params
+
+  //     if (!userId && !id) throw new UnauthorizedAccessError()
+  //     if (!password || !oldPassword) throw new MissingParamError()
+  //     const user = await UsersModel.findById(id || userId)
+  //     if (!user) throw new DbNotFoundError('User')
+  //     if (!user.password) throw new WrongPwdError()
+  //     if (!bcrypt.compareSync(oldPassword, user.password))
+  //       throw new WrongPwdError()
+  //     const newPwd = {
+  //       password:
+  //         password && user?.password !== password ? password : user?.password,
+  //     }
+  //     await UsersModel.findByIdAndUpdate(userId, newPwd)
+
+  //     res.json({ success: true })
+  //   } catch (e) {
+  //     res.status(e.getStatusCode()).json({ error: e.message })
+  //   }
+  // }
 
   async delete(req: Request, res: Response): Promise<void> {
     try {
