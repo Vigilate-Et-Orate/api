@@ -10,15 +10,18 @@ import {
   WrongPwdError,
 } from '../Error/BadRequestError'
 import BaseError from '../Error/BaseError'
-import serviceAdmin from '../../config/vigilate-et-orate-firebase-admin.json'
 
-const fire = fireadmin.initializeApp({
-  credential: fireadmin.credential.cert(
-    serviceAdmin as fireadmin.ServiceAccount
-  ),
-  databaseURL: 'https://vigilate-et-orate.firebaseio.com',
-})
-const fauth = fire.auth()
+let fauth: fireadmin.auth.Auth
+if (process.env.NODE_ENV !== 'test') {
+  const serviceAdmin = require('../../config/vigilate-et-orate-firebase-admin.json')
+  const fire = fireadmin.initializeApp({
+    credential: fireadmin.credential.cert(
+      serviceAdmin as fireadmin.ServiceAccount
+    ),
+    databaseURL: 'https://vigilate-et-orate.firebaseio.com',
+  })
+  fauth = fire.auth()
+}
 
 class AuthController {
   async register(req: Request, res: Response): Promise<void> {
@@ -28,7 +31,7 @@ class AuthController {
       if (!email || !firstname || !lastname || !password)
         throw new MissingParamError()
 
-      if (process.env.NODE_ENV !== 'test')
+      if (process.env.NODE_ENV !== 'test' && fauth)
         await fauth.createUser({
           email,
           displayName: firstname + ' ' + lastname,
