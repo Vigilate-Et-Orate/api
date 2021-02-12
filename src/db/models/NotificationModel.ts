@@ -4,6 +4,8 @@ import { IUserDoc } from './UsersModel'
 
 interface INotification {
   user: string | IUserDoc
+  type: 'prayer' | 'intentions'
+  itemId: string
   notificationContent: INotificationContentDoc | string
   time: string
 }
@@ -14,6 +16,14 @@ const notificationSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     refs: 'users',
+    required: true,
+  },
+  type: {
+    type: String,
+    required: true,
+  },
+  item: {
+    type: String,
     required: true,
   },
   notificationContent: {

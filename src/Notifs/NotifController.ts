@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import { DbNotFoundError } from '../Error/DataBaseError'
 
 import NotifModel from '../db/models/NotificationModel'
 import { BadParameterError, MissingParamError } from '../Error/BadRequestError'
@@ -8,19 +9,23 @@ import { isTime } from '../utils/timeManager'
 class NotifController {
   async create(req: Request, res: Response): Promise<void> {
     try {
-      const { time, prayerContentId } = req.body
+      const { time, prayerContentId, type, itemId } = req.body
       const { userId } = req.params
 
-      if (!prayerContentId || !time) throw new MissingParamError()
+      if (!prayerContentId || !time || !itemId || !type)
+        throw new MissingParamError()
       if (!isTime(time)) throw new BadParameterError()
       const n = await NotifModel.findOne({
         notificationContent: prayerContentId,
         user: userId,
+        type,
         time,
       })
       if (n) {
         res.json({
           id: n._id,
+          type: n.type,
+          itemId: n.itemId,
           notificationContent: n.notificationContent,
           time: n.time,
         })
@@ -28,11 +33,15 @@ class NotifController {
       }
       const notif = await NotifModel.create({
         notificationContent: prayerContentId,
+        type,
+        itemId,
         time,
         user: userId,
       })
       res.json({
         _id: notif._id,
+        type: notif.type,
+        itemId: notif.itemId,
         notificationContent: notif.notificationContent,
         time: notif.time,
       })
@@ -50,6 +59,26 @@ class NotifController {
       const notifs = await NotifModel.find({ user: userId })
 
       res.json(notifs)
+    } catch (e) {
+      if (e instanceof BaseError)
+        res.status(e.getStatusCode()).json({ error: e.message })
+      else res.status(500).json({ error: e.message })
+    }
+  }
+
+  async update(req: Request, res: Response): Promise<void> {
+    try {
+      const { time } = req.body
+      const { id } = req.params
+
+      if (!id || !time) throw new MissingParamError()
+      const notif = await NotifModel.findById(id)
+      if (!notif) throw new DbNotFoundError()
+
+      notif.time = time
+      notif.save()
+
+      res.json(notif)
     } catch (e) {
       if (e instanceof BaseError)
         res.status(e.getStatusCode()).json({ error: e.message })

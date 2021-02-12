@@ -22,8 +22,11 @@ const isAdmin = async (
       : jwt.decode(token as string)
     if (!decoded) throw new InvalidTokenError()
     if (typeof decoded !== 'string') {
-      req.params.userId = decoded._id
-      if (!decoded.admin) throw new UnauthorizedAdminError()
+      req.params.userId = decoded._id ? decoded._id : decoded.id
+      const user = await UsersModel.findById(
+        decoded.id ? decoded.id : decoded._id
+      )
+      if (!user || !user.admin) throw new UnauthorizedAdminError()
     } else {
       const user = await UsersModel.findById(decoded)
       if (!user || !user.admin) throw new UnauthorizedAdminError()

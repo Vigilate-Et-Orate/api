@@ -58,12 +58,12 @@ class PrayerController {
   async update(req: Request, res: Response): Promise<void> {
     try {
       const { prayerContent, notifContent }: TCreateParams = req.body
-      const { userId } = req.params
+      const { userId, id } = req.params
 
       if ((!prayerContent && !notifContent) || !userId)
         throw new MissingParamError()
 
-      const prayer = await PrayerModel.findById(prayerContent._id)
+      const prayer = await PrayerModel.findById(id)
       if (!prayer) throw new DbNotFoundError()
 
       prayer.name = getUpdate(prayerContent.name, prayer.name)

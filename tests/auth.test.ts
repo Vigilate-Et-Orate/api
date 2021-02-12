@@ -85,6 +85,7 @@ describe('Auth - Login', () => {
     expect(res.body.user).toEqual({
       id: userId,
       firstname: 'John',
+      admin: true,
       lastname: 'Peter',
       email: 'test@test.me',
     })

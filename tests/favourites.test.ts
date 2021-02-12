@@ -47,7 +47,7 @@ beforeAll(async () => {
     .set('Authorization', token)
     .set('Accept', 'application/json')
   if (res2.status !== 200) return
-  prayerId = res2.body.id
+  prayerId = res2.body._id
 })
 
 afterAll(async () => {
@@ -185,10 +185,9 @@ describe('Favourites - get all fav for user', () => {
     expect(res.body).toEqual([
       {
         faved: false,
-        _id: favouriteId,
+        id: favouriteId,
         user: userId,
         prayer: prayerId,
-        __v: 0,
       },
     ])
   })

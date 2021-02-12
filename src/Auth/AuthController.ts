@@ -1,7 +1,6 @@
 import { Request, Response } from 'express'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import Prometheus from 'prom-client'
 import * as fireadmin from 'firebase-admin'
 
 import UsersModel, { IUserDoc } from '../db/models/UsersModel'
@@ -12,16 +11,6 @@ import {
 } from '../Error/BadRequestError'
 import BaseError from '../Error/BaseError'
 import serviceAdmin from '../../config/vigilate-et-orate-firebase-admin.json'
-
-const registerCount = new Prometheus.Counter({
-  name: 'register',
-  help: 'Number of registration',
-})
-
-const loginCount = new Prometheus.Counter({
-  name: 'login',
-  help: 'Number of logins',
-})
 
 const fire = fireadmin.initializeApp({
   credential: fireadmin.credential.cert(
@@ -34,17 +23,17 @@ const fauth = fire.auth()
 class AuthController {
   async register(req: Request, res: Response): Promise<void> {
     try {
-      registerCount.inc()
       const { email, firstname, lastname, admin, password } = req.body
 
       if (!email || !firstname || !lastname || !password)
         throw new MissingParamError()
 
-      await fauth.createUser({
-        email,
-        displayName: firstname + ' ' + lastname,
-        password,
-      })
+      if (process.env.NODE_ENV !== 'test')
+        await fauth.createUser({
+          email,
+          displayName: firstname + ' ' + lastname,
+          password,
+        })
       const user = await UsersModel.create({
         email,
         firstname,
@@ -78,7 +67,6 @@ class AuthController {
 
   async login(req: Request, res: Response): Promise<void> {
     try {
-      loginCount.inc()
       const { email, password } = req.body
 
       if (!email || !password) throw new MissingParamError()
