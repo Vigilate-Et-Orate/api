@@ -33,7 +33,7 @@ afterAll(async () => {
 })
 
 describe('Prayer - create', () => {
-  it(' Create - Good Request', async () => {
+  it('Create - Good Request', async () => {
     const res = await request(app)
       .post('/prayers')
       .send({
@@ -58,7 +58,7 @@ describe('Prayer - create', () => {
     expect(res.body.content).toEqual(
       "L'ange du Seigneur porta l'annonce a Marie"
     )
-    prayerId = res.body.id
+    prayerId = res.body._id
     notifId = res.body.notificationContent._id
   })
 
@@ -130,7 +130,7 @@ describe('Retrieve', () => {
       .set('Accept', 'application/json')
     expect(res.status).toEqual(200)
     expect(res.body).toEqual({
-      id: prayerId,
+      _id: prayerId,
       displayName: "L'Angelus",
       name: 'angelus',
       content: "L'ange du Seigneur porta l'annonce a Marie",
