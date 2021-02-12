@@ -1,9 +1,9 @@
 {
   "name": "rest_express_ts_api",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "RESTful API with NodeJS ExpressJS in TypeScript",
   "main": "index.js",
-  "repository": "git@github.com:awalshy/rest_express_ts_api.git",
+  "repository": "https://github.com/Vigilate-Et-Orate/api",
   "author": "Arthur Walsh <walsh.arthur@outlook.com>",
   "license": "MIT",
   "scripts": {
