@@ -1,5 +1,7 @@
 import { IDeviceDoc } from '../db/models/DevicesModel'
-import NotificationContentModel from '../db/models/NotificationContentModel'
+import NotificationContentModel, {
+  INotificationContentDoc,
+} from '../db/models/NotificationContentModel'
 import UsersModel from '../db/models/UsersModel'
 import { Expo, ExpoPushMessage } from 'expo-server-sdk'
 import NotifModel, { INotificationDoc } from '../db/models/NotificationModel'
@@ -10,10 +12,15 @@ const getMessagesForNotif = async (
 ): Promise<ExpoPushMessage[]> => {
   const msgs: ExpoPushMessage[] = []
   const user = await UsersModel.findById(notif.user)
-  const notifContent = await NotificationContentModel.findById(
-    notif.notificationContent
-  )
-  if (!user || !notifContent) throw new Error('Failed to load infos')
+  const notifContent =
+    notif.type === 'prayer'
+      ? await NotificationContentModel.findById(notif.notificationContent)
+      : ({
+          title: 'Confions plus particulièrement cette intention de prières',
+          body: '',
+          sound: false,
+        } as INotificationContentDoc)
+  if (!user || !notifContent) return []
   await user.populate('devices').execPopulate()
   const devices = user.devices as IDeviceDoc[]
   devices.forEach((d) => {
