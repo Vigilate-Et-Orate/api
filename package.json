@@ -1,6 +1,6 @@
 {
   "name": "rest_express_ts_api",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "RESTful API with NodeJS ExpressJS in TypeScript",
   "main": "index.js",
   "repository": "https://github.com/Vigilate-Et-Orate/api",

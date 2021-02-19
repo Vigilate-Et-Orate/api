@@ -109,10 +109,8 @@ class UserController {
         password && user?.password !== password
           ? bcrypt.hashSync(password, 12)
           : user?.password
-      const u = await UsersModel.findById(userId)
-      if (!u) throw new DbNotFoundError('User')
-      u.password = newPwd
-      u.save()
+      user.password = newPwd
+      user.save()
 
       res.json({ success: true })
     } catch (e) {
