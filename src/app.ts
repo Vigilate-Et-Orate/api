@@ -56,7 +56,11 @@ class App {
       })
     )
     this.app.use(helmet())
-    this.app.use(cors())
+    this.app.use(
+      cors({
+        origin: ['http://localhost:3000', 'https://admin.vigilateetorate.tech'],
+      })
+    )
     this.app.get('/metrics', (_req, res) => {
       res.set('Content-Type', Prometheus.register.contentType)
       res.end(Prometheus.register.metrics())

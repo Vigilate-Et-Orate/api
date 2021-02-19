@@ -105,13 +105,14 @@ class UserController {
       const user = await UsersModel.findById(id || userId)
       if (!user) throw new DbNotFoundError('User')
       if (!user.password) throw new WrongPwdError()
-      const newPwd = {
-        password:
-          password && user?.password !== password
-            ? bcrypt.hashSync(password, 12)
-            : user?.password,
-      }
-      await UsersModel.findByIdAndUpdate(userId, newPwd)
+      const newPwd =
+        password && user?.password !== password
+          ? bcrypt.hashSync(password, 12)
+          : user?.password
+      const u = await UsersModel.findById(userId)
+      if (!u) throw new DbNotFoundError('User')
+      u.password = newPwd
+      u.save()
 
       res.json({ success: true })
     } catch (e) {
