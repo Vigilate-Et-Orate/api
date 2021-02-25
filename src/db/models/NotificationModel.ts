@@ -22,7 +22,7 @@ const notificationSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  item: {
+  itemId: {
     type: String,
     required: true,
   },
