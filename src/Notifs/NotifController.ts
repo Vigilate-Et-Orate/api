@@ -12,11 +12,12 @@ class NotifController {
       const { time, prayerContentId, type, itemId } = req.body
       const { userId } = req.params
 
-      if (!prayerContentId || !time || !itemId || !type)
-        throw new MissingParamError()
+      if (!time || !itemId || !type) throw new MissingParamError()
+      if (!prayerContentId && type === 'prayer') throw new MissingParamError()
       if (!isTime(time)) throw new BadParameterError()
       const n = await NotifModel.findOne({
-        notificationContent: prayerContentId,
+        notificationContent:
+          type === 'prayer' ? prayerContentId : '603d0f2bdac4380006256de0',
         user: userId,
         type,
         time,
@@ -32,7 +33,8 @@ class NotifController {
         return
       }
       const notif = await NotifModel.create({
-        notificationContent: prayerContentId,
+        notificationContent:
+          type === 'prayer' ? prayerContentId : '603d0f2bdac4380006256de0',
         type,
         itemId,
         time,

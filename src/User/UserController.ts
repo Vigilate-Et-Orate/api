@@ -1,31 +1,14 @@
 import { Request, Response } from 'express'
 import bcrypt from 'bcrypt'
-import Prometheus from 'prom-client'
 
 import UsersModel from '../db/models/UsersModel'
 import { UnauthorizedAccessError } from '../Error/UnauthorizedError'
 import { DbNotFoundError } from '../Error/DataBaseError'
 import { MissingParamError, WrongPwdError } from '../Error/BadRequestError'
 
-const getUserCount = new Prometheus.Counter({
-  name: 'get_user',
-  help: 'Get current user informations',
-})
-
-const updateUserCount = new Prometheus.Counter({
-  name: 'update_user',
-  help: 'Update current user',
-})
-
-const updatePwdCount = new Prometheus.Counter({
-  name: 'update_pwd_user',
-  help: 'Update current user pwd',
-})
-
 class UserController {
   async update(req: Request, res: Response): Promise<void> {
     try {
-      updateUserCount.inc()
       const { userId, id } = req.params
       const { email, firstname, lastname } = req.body
 
@@ -51,7 +34,6 @@ class UserController {
 
   async retrieve(req: Request, res: Response): Promise<void> {
     try {
-      getUserCount.inc()
       const { userId, id } = req.params
 
       if (!userId && !id) throw new MissingParamError()
@@ -96,7 +78,6 @@ class UserController {
 
   async updatePwd(req: Request, res: Response): Promise<void> {
     try {
-      updatePwdCount.inc()
       const { password } = req.body
       const { userId, id } = req.params
 
