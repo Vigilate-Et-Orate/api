@@ -4,6 +4,7 @@ import UsersModel from '../db/models/UsersModel'
 import { Expo, ExpoPushMessage } from 'expo-server-sdk'
 import NotifModel, { INotificationDoc } from '../db/models/NotificationModel'
 import { stringToTime } from './timeManager'
+import PrayerModel from '../db/models/PrayerModel'
 
 const getMessagesForNotif = async (
   notif: INotificationDoc
@@ -15,14 +16,21 @@ const getMessagesForNotif = async (
   )
   if (!user || !notifContent) return []
   await user.populate('devices').execPopulate()
+  const prayer =
+    notif.type === 'prayer'
+      ? await PrayerModel.findById(notif.itemId)
+      : undefined
   const devices = user.devices as IDeviceDoc[]
   devices.forEach((d) => {
     const m: ExpoPushMessage = {
       to: d.token,
       sound: 'default',
       title: notifContent.title,
-      subtitle: notifContent.body,
+      body: notifContent.body,
       channelId: notif.type,
+      data: {
+        prayerName: prayer ? prayer.name : null,
+      },
     }
     msgs.push(m)
   })
