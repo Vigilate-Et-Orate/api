@@ -21,7 +21,7 @@ const getMessagesForNotif = async (
       to: d.token,
       sound: 'default',
       title: notifContent.title,
-      body: notifContent.body,
+      subtitle: notifContent.body,
       channelId: notif.type,
     }
     msgs.push(m)
