@@ -1,10 +1,23 @@
 import { Request, Response } from 'express'
 import bcrypt from 'bcrypt'
+import * as fireadmin from 'firebase-admin'
 
 import UsersModel from '../db/models/UsersModel'
 import { UnauthorizedAccessError } from '../Error/UnauthorizedError'
 import { DbNotFoundError } from '../Error/DataBaseError'
 import { MissingParamError, WrongPwdError } from '../Error/BadRequestError'
+
+let fauth: fireadmin.auth.Auth
+if (process.env.NODE_ENV !== 'test') {
+  const serviceAdmin = require('../../config/vigilate-et-orate-firebase-admin.json')
+  const fire = fireadmin.initializeApp({
+    credential: fireadmin.credential.cert(
+      serviceAdmin as fireadmin.ServiceAccount
+    ),
+    databaseURL: 'https://vigilate-et-orate.firebaseio.com',
+  })
+  fauth = fire.auth()
+}
 
 class UserController {
   async update(req: Request, res: Response): Promise<void> {
@@ -26,6 +39,10 @@ class UserController {
           lastname && user?.lastname !== lastname ? lastname : user.lastname,
       }
       await UsersModel.findByIdAndUpdate(userId, updates)
+      if (process.env.NODE_ENV !== 'test') {
+        const fireuserUid = (await fauth.getUserByEmail(user.email)).uid
+        fauth.updateUser(fireuserUid, updates)
+      }
       res.send(updates)
     } catch (e) {
       res.status(e.getStatusCode()).json({ error: e.message })
@@ -92,6 +109,12 @@ class UserController {
           : user?.password
       user.password = newPwd
       user.save()
+      if (process.env.NODE_ENV !== 'test') {
+        const uid = (await fauth.getUserByEmail(user.email)).uid
+        fauth.updateUser(uid, {
+          password: newPwd,
+        })
+      }
 
       res.json({ success: true })
     } catch (e) {
@@ -131,6 +154,10 @@ class UserController {
       if (!userId && !id) throw new MissingParamError()
       const user = await UsersModel.findByIdAndDelete(id || userId)
       if (!user) throw new DbNotFoundError('User')
+      if (process.env.NODE_ENV !== 'test') {
+        const fuid = (await fauth.getUserByEmail(user.email)).uid
+        fauth.deleteUser(fuid)
+      }
 
       res.json(user)
     } catch (e) {
