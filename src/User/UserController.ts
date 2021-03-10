@@ -8,16 +8,7 @@ import { DbNotFoundError } from '../Error/DataBaseError'
 import { MissingParamError, WrongPwdError } from '../Error/BadRequestError'
 
 let fauth: fireadmin.auth.Auth
-if (process.env.NODE_ENV !== 'test') {
-  const serviceAdmin = require('../../config/vigilate-et-orate-firebase-admin.json')
-  const fire = fireadmin.initializeApp({
-    credential: fireadmin.credential.cert(
-      serviceAdmin as fireadmin.ServiceAccount
-    ),
-    databaseURL: 'https://vigilate-et-orate.firebaseio.com',
-  })
-  fauth = fire.auth()
-}
+if (process.env.NODE_ENV !== 'test') fauth = fireadmin.auth()
 
 class UserController {
   async update(req: Request, res: Response): Promise<void> {
@@ -124,7 +115,6 @@ class UserController {
 
   // async updatePwd(req: Request, res: Response): Promise<void> {
   //   try {
-  //     updatePwdCount.inc()
   //     const { password, oldPassword } = req.body
   //     const { userId, id } = req.params
 

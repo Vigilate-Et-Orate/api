@@ -23,6 +23,4 @@
 - jest endpoint testing
 - login
 - register
-- grafana
-- prometheus
 - migrations

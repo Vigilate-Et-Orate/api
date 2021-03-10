@@ -4,7 +4,6 @@ import morgan from 'morgan'
 import helmet from 'helmet'
 import cors from 'cors'
 import schedule from 'node-schedule'
-import Prometheus from 'prom-client'
 
 import { connect } from './db/db'
 import packageDetails from '../package.json'
@@ -17,8 +16,6 @@ import FavouriteRoutes from './Favourite/FavouriteRoutes'
 import NotifsRoutes from './Notifs/NotifRoutes'
 import mongoose from 'mongoose'
 import { notifTask } from './utils/notificationTask'
-
-Prometheus.collectDefaultMetrics()
 
 class App {
   public app: express.Application
@@ -61,10 +58,6 @@ class App {
         origin: ['http://localhost:3000', 'https://admin.vigilateetorate.tech'],
       })
     )
-    this.app.get('/metrics', (_req, res) => {
-      res.set('Content-Type', Prometheus.register.contentType)
-      res.end(Prometheus.register.metrics())
-    })
     this.app.get('/', (_req, res) => {
       const infos = {
         name: packageDetails.description,
